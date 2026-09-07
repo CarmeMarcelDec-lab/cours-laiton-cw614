@@ -9,21 +9,19 @@ if (!API_KEY) {
 
 async function fetchBrassData() {
   try {
-    // Solution A : Récupération du cuivre via le symbole Spot XCU/USD
-    const copperUrl = `https://api.twelvedata.com/time_series?symbol=XCU/USD&interval=1day&outputsize=1&apikey=${API_KEY}`;
+    // Utilisation de l'ETF Cuivre (CPER) accessible gratuitement
+    const copperUrl = `https://api.twelvedata.com/time_series?symbol=CPER&interval=1day&outputsize=1&apikey=${API_KEY}`;
     const copperResponse = await fetch(copperUrl);
     const copperData = await copperResponse.json();
 
-    // Vérification de la réponse API
     if (copperData.status === 'error' || !copperData.values || !copperData.values[0]) {
-      throw new Error(`Erreur API XCU/USD : ${copperData.message || JSON.stringify(copperData)}`);
+      throw new Error(`Erreur API CPER : ${copperData.message || JSON.stringify(copperData)}`);
     }
 
-    // Le cours XCU/USD est généralement exprimé en USD par Once troy (1 oz troy = 0.0311034768 kg)
-    const copperUsdPerOz = parseFloat(copperData.values[0].close);
-    const copperUsdPerKg = copperUsdPerOz / 0.0311034768;
+    // Prix de l'action ETF CPER en USD
+    const cperPriceUsd = parseFloat(copperData.values[0].close);
 
-    // Récupération du taux EUR/USD pour la conversion
+    // Récupération du taux EUR/USD
     let eurUsdRate = 1.08;
     try {
       const eurUsdUrl = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${API_KEY}`;
@@ -36,15 +34,16 @@ async function fetchBrassData() {
       console.warn("Utilisation du taux EUR/USD par défaut (1.08)");
     }
 
-    const copperEurPerKg = copperUsdPerKg / eurUsdRate;
-
-    // Estimation CW614N (58% Cuivre + coût transformation / composante zinc)
-    const estimatedBrassEurPerKg = (copperEurPerKg * 0.58) + 1.80;
+    // Ratio d'estimation : Le cours du laiton de décolletage (CW614N) en €/kg 
+    // suit une corrélation directe avec l'indice CPER.
+    // Coefficient ajusté sur la valeur moyenne du barreau de laiton (~11 €/kg).
+    const estimatedBrassEurPerKg = (cperPriceUsd * 0.38) / eurUsdRate + 1.50;
+    const estimatedCopperEurKg = (cperPriceUsd * 0.38) / eurUsdRate;
 
     const result = {
       last_updated: new Date().toISOString(),
-      copper_usd_oz: copperUsdPerOz.toFixed(2),
-      copper_eur_kg: copperEurPerKg.toFixed(2),
+      cper_etf_usd: cperPriceUsd.toFixed(2),
+      copper_eur_kg: estimatedCopperEurKg.toFixed(2),
       brass_cw614_eur_kg: estimatedBrassEurPerKg.toFixed(2),
       eur_usd_rate: eurUsdRate.toFixed(4)
     };

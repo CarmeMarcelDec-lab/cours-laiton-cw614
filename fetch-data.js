@@ -17,8 +17,8 @@ async function fetchBrassData() {
     if (!copperData.values || !copperData.values[0]) throw new Error("Erreur API CPER");
     const cperUsd = parseFloat(copperData.values[0].close);
 
-    // 2. Cours du Zinc (via symbole ZINC/USD ou estimation corrélée CPER)
-    let zincUsdKg = 2.80; // Valeur par défaut spot zinc/kg
+    // 2. Cours du Zinc (valeur spot indicative en USD/kg)
+    let zincUsdKg = 2.70;
     try {
       const zincUrl = `https://api.twelvedata.com/time_series?symbol=ZINC&interval=1day&outputsize=1&apikey=${API_KEY}`;
       const zincRes = await fetch(zincUrl);
@@ -27,7 +27,7 @@ async function fetchBrassData() {
         zincUsdKg = parseFloat(zincData.values[0].close);
       }
     } catch (e) {
-      console.warn("Utilisation valeur indicative pour le Zinc");
+      console.warn("Utilisation de la valeur indicative par défaut pour le Zinc");
     }
 
     // 3. Taux EUR/USD
@@ -41,16 +41,22 @@ async function fetchBrassData() {
       console.warn("Taux EUR/USD par défaut (1.08)");
     }
 
-    // Calculations (€/kg)
-    const copperEurKg = (cperUsd * 0.38) / eurUsdRate;
+    // Conversions et ajustements pour le marché des métaux (€/kg)
+    // Conversion de l'indice CPER vers le cours reel USD/lb du cuivre (~4.00 - 4.30 $/lb)
+    const copperUsdPerLb = cperUsd * 0.155;
+    const copperUsdPerKg = copperUsdPerLb / 0.453592;
+    const copperEurKg = copperUsdPerKg / eurUsdRate;
+
+    // Convertir le Zinc en EUR/kg
     const zincEurKg = zincUsdKg / eurUsdRate;
 
-    // Formule CW614N : 58.5% Cu + 39% Zn + 1.50€/kg transformation/profilage
-    const brassCw614EurKg = (copperEurKg * 0.585) + (zincEurKg * 0.39) + 1.50;
+    // Formule CW614N : 58.5% Cuivre + 39% Zinc + ~0.90 €/kg (transformation/filage/étirage barres)
+    const rawBrassEurKg = (copperEurKg * 0.585) + (zincEurKg * 0.39);
+    const brassCw614EurKg = rawBrassEurKg + 0.90;
 
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // 4. Lecture de l'historique existant dans docs/data.json
+    // 4. Gestion de l'historique dans docs/data.json
     let history = [];
     if (fs.existsSync(path)) {
       try {
@@ -63,7 +69,7 @@ async function fetchBrassData() {
       }
     }
 
-    // Mise à jour de la journée (ou remplacement si déjà exécuté aujourd'hui)
+    // Mise à jour du point du jour
     const existingIndex = history.findIndex(item => item.date === todayStr);
     const newEntry = {
       date: todayStr,
@@ -78,7 +84,7 @@ async function fetchBrassData() {
       history.push(newEntry);
     }
 
-    // Conserver uniquement les 30 derniers jours
+    // Conserver uniquement les 30 derniers points
     if (history.length > 30) {
       history = history.slice(-30);
     }
@@ -99,7 +105,7 @@ async function fetchBrassData() {
     }
 
     fs.writeFileSync(path, JSON.stringify(output, null, 2));
-    console.log('Succès ! Génération docs/data.json :', output.current);
+    console.log('Succès ! Génération de docs/data.json :', output.current);
 
   } catch (error) {
     console.error('Échec de la mise à jour :', error.message);

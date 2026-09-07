@@ -19,13 +19,11 @@
       --accent-steel: #2563EB;
       --text-main: #F1F5F9;
       --text-muted: #64748B;
+      --up-color: #10B981;
+      --down-color: #EF4444;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -41,10 +39,7 @@
         radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
     }
 
-    .container {
-      max-width: 1000px;
-      width: 100%;
-    }
+    .container { max-width: 1000px; width: 100%; }
 
     header {
       display: flex;
@@ -62,16 +57,9 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
 
-    .subtitle {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
+    .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
 
     .update-badge {
       font-size: 0.75rem;
@@ -80,11 +68,23 @@
       padding: 6px 12px;
       border-radius: 20px;
       border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #10B981;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px #10B981;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -99,18 +99,13 @@
       transition: transform 0.2s, border-color 0.2s;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: #334155;
-    }
+    .card:hover { transform: translateY(-2px); border-color: #334155; }
 
     .card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
     }
 
     .card.brass::before { background-color: var(--accent-brass); }
@@ -118,11 +113,7 @@
     .card.inox::before { background-color: var(--accent-inox); }
     .card.steel::before { background-color: var(--accent-steel); }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .card-header { display: flex; justify-content: space-between; align-items: center; }
 
     .card-title {
       font-family: 'Chakra Petch', sans-serif;
@@ -133,30 +124,51 @@
       letter-spacing: 0.05em;
     }
 
-    .card-norm {
-      font-size: 0.7rem;
-      color: #475569;
-    }
+    .card-norm { font-size: 0.7rem; color: #475569; }
 
     .card-value {
       font-family: 'Chakra Petch', sans-serif;
       font-size: 1.8rem;
       font-weight: 700;
-      margin-top: 12px;
+      margin-top: 10px;
       color: #FFF;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
     }
 
-    .card-unit {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 400;
+    .card-unit { font-size: 0.85rem; color: var(--text-muted); font-weight: 400; }
+
+    .badge-var {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Inter', sans-serif;
     }
+    .badge-var.up { background: rgba(16, 185, 129, 0.15); color: var(--up-color); }
+    .badge-var.down { background: rgba(239, 68, 68, 0.15); color: var(--down-color); }
+
+    .card-footer-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.05);
+    }
+
+    .signal-tag { font-weight: 600; }
+    .signal-tag.buy { color: var(--up-color); }
+    .signal-tag.wait { color: var(--accent-brass); }
 
     .chart-box {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 24px;
+      margin-bottom: 24px;
     }
 
     .chart-header {
@@ -174,6 +186,67 @@
       text-transform: uppercase;
     }
 
+    .btn-group { display: flex; gap: 6px; }
+
+    .btn-filter {
+      background: #0F172A;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: 'Chakra Petch', sans-serif;
+    }
+
+    .btn-filter.active {
+      background: var(--accent-steel);
+      color: #FFF;
+      border-color: var(--accent-steel);
+    }
+
+    .calc-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .calc-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .calc-inputs { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+    .calc-group { display: flex; flex-direction: column; gap: 4px; }
+    .calc-group label { font-size: 0.7rem; color: var(--text-muted); }
+
+    .calc-input, .calc-select {
+      background: #0B0F17;
+      border: 1px solid var(--card-border);
+      color: #FFF;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.9rem;
+    }
+
+    .calc-result {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-brass);
+    }
+
     footer {
       margin-top: 24px;
       text-align: center;
@@ -187,154 +260,269 @@
   <div class="container">
     <header>
       <div>
-        <div class="brand-title">
-          Carme Marcel Décolletage
-        </div>
+        <div class="brand-title">Carme Marcel Décolletage</div>
         <div class="subtitle">Baromètre des métaux de décolletage (€ HT / kg)</div>
       </div>
-      <div class="update-badge" id="update-date">Mise à jour : --</div>
+      <div class="update-badge">
+        <span class="status-dot"></span>
+        <span id="update-date">Mise à jour : --</span>
+      </div>
     </header>
 
     <div class="grid">
+      <!-- Laiton -->
       <div class="card brass">
         <div class="card-header">
           <span class="card-title">Laiton CW614N</span>
           <span class="card-norm">CuZn39Pb3</span>
         </div>
-        <div class="card-value" id="brass-val">-- <span class="card-unit">€ HT/kg</span></div>
+        <div class="card-value">
+          <span id="brass-val">--</span>
+          <span id="brass-var" class="badge-var">--</span>
+        </div>
+        <div class="card-footer-info">
+          <span>Min/Max: <b id="brass-range">--</b></span>
+          <span class="signal-tag" id="brass-signal">--</span>
+        </div>
       </div>
 
+      <!-- Alu -->
       <div class="card alu">
         <div class="card-header">
           <span class="card-title">Alu 2017A</span>
           <span class="card-norm">AlCu4MgSi</span>
         </div>
-        <div class="card-value" id="alu-val">-- <span class="card-unit">€ HT/kg</span></div>
+        <div class="card-value">
+          <span id="alu-val">--</span>
+          <span id="alu-var" class="badge-var">--</span>
+        </div>
+        <div class="card-footer-info">
+          <span>Min/Max: <b id="alu-range">--</b></span>
+          <span class="signal-tag" id="alu-signal">--</span>
+        </div>
       </div>
 
+      <!-- Inox -->
       <div class="card inox">
         <div class="card-header">
           <span class="card-title">Inox 303</span>
           <span class="card-norm">1.4305</span>
         </div>
-        <div class="card-value" id="inox-val">-- <span class="card-unit">€ HT/kg</span></div>
+        <div class="card-value">
+          <span id="inox-val">--</span>
+          <span id="inox-var" class="badge-var">--</span>
+        </div>
+        <div class="card-footer-info">
+          <span>Min/Max: <b id="inox-range">--</b></span>
+          <span class="signal-tag" id="inox-signal">--</span>
+        </div>
       </div>
 
+      <!-- Acier -->
       <div class="card steel">
         <div class="card-header">
           <span class="card-title">Acier S300PB</span>
           <span class="card-norm">1.0718</span>
         </div>
-        <div class="card-value" id="steel-val">-- <span class="card-unit">€ HT/kg</span></div>
+        <div class="card-value">
+          <span id="steel-val">--</span>
+          <span id="steel-var" class="badge-var">--</span>
+        </div>
+        <div class="card-footer-info">
+          <span>Min/Max: <b id="steel-range">--</b></span>
+          <span class="signal-tag" id="steel-signal">--</span>
+        </div>
       </div>
     </div>
 
+    <!-- Graphique -->
     <div class="chart-box">
       <div class="chart-header">
-        <div class="chart-title">Évolution glissante (30 jours)</div>
+        <div class="chart-title">Évolution des cours</div>
+        <div class="btn-group">
+          <button class="btn-filter" onclick="updateChartRange(7)">7j</button>
+          <button class="btn-filter active" onclick="updateChartRange(30)">30j</button>
+        </div>
       </div>
       <canvas id="multiChart" height="220"></canvas>
     </div>
 
+    <!-- Calculateur -->
+    <div class="calc-box">
+      <div>
+        <div class="calc-title">Estimation Coût Matière (Devis)</div>
+        <div style="font-size:0.75rem; color:var(--text-muted)">Calcul rapide basé sur le cours du jour</div>
+      </div>
+      <div class="calc-inputs">
+        <div class="calc-group">
+          <label>Matière</label>
+          <select id="calc-mat" class="calc-select" onchange="calculateCost()">
+            <option value="brass">Laiton CW614N</option>
+            <option value="alu">Alu 2017A</option>
+            <option value="inox">Inox 303</option>
+            <option value="steel">Acier S300PB</option>
+          </select>
+        </div>
+        <div class="calc-group">
+          <label>Poids (kg)</label>
+          <input type="number" id="calc-weight" class="calc-input" value="100" min="1" style="width: 90px;" oninput="calculateCost()">
+        </div>
+        <div class="calc-group">
+          <label>Total HT estimé</label>
+          <div id="calc-result" class="calc-result">0.00 €</div>
+        </div>
+      </div>
+    </div>
+
     <footer>
-      Données indicative calculées automatiquement selon cours boursiers (LME / CPER) et barèmes fournisseurs.
+      Données indicatives calculées automatiquement selon cours boursiers (LME / CPER) et barèmes fournisseurs.
     </footer>
   </div>
 
   <script>
+    let rawHistory = [];
+    let currentPrices = {};
+    let chartInstance = null;
+
     fetch('./data.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('brass-val').innerHTML = `${data.current.brass_cw614_eur_kg} <span class="card-unit">€ HT/kg</span>`;
-        document.getElementById('alu-val').innerHTML = `${data.current.alu_2017_eur_kg} <span class="card-unit">€ HT/kg</span>`;
-        document.getElementById('inox-val').innerHTML = `${data.current.inox_303_eur_kg} <span class="card-unit">€ HT/kg</span>`;
-        document.getElementById('steel-val').innerHTML = `${data.current.steel_s300pb_eur_kg} <span class="card-unit">€ HT/kg</span>`;
+        rawHistory = data.history || [];
+        currentPrices = data.current;
 
+        // Mise à jour date
         const dateObj = new Date(data.last_updated);
-        document.getElementById('update-date').innerText = `Dernière synchro : ${dateObj.toLocaleDateString('fr-FR')} ${dateObj.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}`;
+        document.getElementById('update-date').innerText = `Synchro : ${dateObj.toLocaleDateString('fr-FR')} ${dateObj.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}`;
 
-        const history = data.history || [];
-        const labels = history.map(i => i.date);
+        // Remplissage métriques cartes
+        setupCard('brass', currentPrices.brass_cw614_eur_kg, rawHistory.map(i => i.brass));
+        setupCard('alu', currentPrices.alu_2017_eur_kg, rawHistory.map(i => i.alu2017));
+        setupCard('inox', currentPrices.inox_303_eur_kg, rawHistory.map(i => i.inox303));
+        setupCard('steel', currentPrices.steel_s300pb_eur_kg, rawHistory.map(i => i.s300pb));
 
-        const ctx = document.getElementById('multiChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Laiton CW614N',
-                data: history.map(i => i.brass),
-                borderColor: '#F59E0B',
-                backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                borderWidth: 2,
-                pointRadius: 3,
-                tension: 0.2
-              },
-              {
-                label: 'Alu 2017A',
-                data: history.map(i => i.alu2017),
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 2,
-                pointRadius: 3,
-                tension: 0.2
-              },
-              {
-                label: 'Inox 303',
-                data: history.map(i => i.inox303),
-                borderColor: '#EAB308',
-                backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                borderWidth: 2,
-                pointRadius: 3,
-                tension: 0.2
-              },
-              {
-                label: 'Acier S300PB',
-                data: history.map(i => i.s300pb),
-                borderColor: '#2563EB',
-                backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                borderWidth: 2,
-                pointRadius: 3,
-                tension: 0.2
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                labels: {
-                  color: '#94A3B8',
-                  font: { family: 'Inter', size: 12 }
-                }
-              },
-              tooltip: {
-                backgroundColor: '#0F172A',
-                titleColor: '#F8FAFC',
-                bodyColor: '#CBD5E1',
-                borderColor: '#1E293B',
-                borderWidth: 1,
-                padding: 10
-              }
+        // Initialisation Graphique
+        renderChart(30);
+
+        // Initialisation Calculateur
+        calculateCost();
+      });
+
+    function setupCard(key, currentVal, historyArr) {
+      document.getElementById(`${key}-val`).innerHTML = `${currentVal} <span class="card-unit">€</span>`;
+      
+      if (historyArr.length > 1) {
+        const prevVal = historyArr[historyArr.length - 2];
+        const diff = ((currentVal - prevVal) / prevVal) * 100;
+        const varEl = document.getElementById(`${key}-var`);
+        
+        varEl.innerText = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
+        varEl.className = `badge-var ${diff >= 0 ? 'up' : 'down'}`;
+
+        const min = Math.min(...historyArr).toFixed(2);
+        const max = Math.max(...historyArr).toFixed(2);
+        document.getElementById(`${key}-range`).innerText = `${min} - ${max}`;
+
+        const signalEl = document.getElementById(`${key}-signal`);
+        if (currentVal <= min * 1.02) {
+          signalEl.innerText = '● Opportunité';
+          signalEl.className = 'signal-tag buy';
+        } else {
+          signalEl.innerText = '● Neutre';
+          signalEl.className = 'signal-tag wait';
+        }
+      }
+    }
+
+    function renderChart(days) {
+      const slicedHistory = rawHistory.slice(-days);
+      const labels = slicedHistory.map(i => i.date);
+      const ctx = document.getElementById('multiChart').getContext('2d');
+
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Laiton CW614N',
+              data: slicedHistory.map(i => i.brass),
+              borderColor: '#F59E0B',
+              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              borderWidth: 2, pointRadius: 3, tension: 0.2
             },
-            scales: {
-              x: {
-                grid: { color: 'rgba(30, 41, 59, 0.5)' },
-                ticks: { color: '#64748B', font: { family: 'Inter', size: 11 } }
-              },
-              y: {
-                grid: { color: 'rgba(30, 41, 59, 0.5)' },
-                ticks: { 
-                  color: '#64748B', 
-                  font: { family: 'Inter', size: 11 },
-                  callback: function(value) { return value + ' €'; }
-                }
+            {
+              label: 'Alu 2017A',
+              data: slicedHistory.map(i => i.alu2017),
+              borderColor: '#10B981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 2, pointRadius: 3, tension: 0.2
+            },
+            {
+              label: 'Inox 303',
+              data: slicedHistory.map(i => i.inox303),
+              borderColor: '#EAB308',
+              backgroundColor: 'rgba(234, 179, 8, 0.1)',
+              borderWidth: 2, pointRadius: 3, tension: 0.2
+            },
+            {
+              label: 'Acier S300PB',
+              data: slicedHistory.map(i => i.s300pb),
+              borderColor: '#2563EB',
+              backgroundColor: 'rgba(37, 99, 235, 0.1)',
+              borderWidth: 2, pointRadius: 3, tension: 0.2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: '#94A3B8', font: { family: 'Inter', size: 12 } } },
+            tooltip: {
+              backgroundColor: '#0F172A',
+              titleColor: '#F8FAFC',
+              bodyColor: '#CBD5E1',
+              borderColor: '#1E293B',
+              borderWidth: 1, padding: 10
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(30, 41, 59, 0.5)' },
+              ticks: { color: '#64748B', font: { family: 'Inter', size: 11 } }
+            },
+            y: {
+              grid: { color: 'rgba(30, 41, 59, 0.5)' },
+              ticks: { 
+                color: '#64748B', font: { family: 'Inter', size: 11 },
+                callback: function(value) { return value + ' €'; }
               }
             }
           }
-        });
+        }
       });
+    }
+
+    function updateChartRange(days) {
+      document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderChart(days);
+    }
+
+    function calculateCost() {
+      const mat = document.getElementById('calc-mat').value;
+      const weight = parseFloat(document.getElementById('calc-weight').value) || 0;
+      
+      let price = 0;
+      if (mat === 'brass') price = currentPrices.brass_cw614_eur_kg || 0;
+      if (mat === 'alu') price = currentPrices.alu_2017_eur_kg || 0;
+      if (mat === 'inox') price = currentPrices.inox_303_eur_kg || 0;
+      if (mat === 'steel') price = currentPrices.steel_s300pb_eur_kg || 0;
+
+      const total = price * weight;
+      document.getElementById('calc-result').innerText = `${total.toFixed(2)} € HT`;
+    }
   </script>
 </body>
 </html>

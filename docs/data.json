@@ -1,17 +1,19 @@
 {
-  "last_updated": "2026-09-07T17:20:55.783Z",
+  "last_updated": "2026-09-07T17:22:46.875Z",
   "current": {
-    "brass_cw614_eur_kg": "16.20",
-    "copper_eur_kg": "13.06",
-    "zinc_eur_kg": "2.32",
+    "brass_cw614_eur_kg": "16.47",
+    "alu_2011_eur_kg": "3.68",
+    "inox_303_eur_kg": "5.40",
+    "steel_11smnpb30_eur_kg": "1.55",
     "eur_usd_rate": "1.1626"
   },
   "history": [
     {
       "date": "2026-09-07",
-      "brass": 16.2,
-      "copper": 13.06,
-      "zinc": 2.32
+      "brass": 16.47,
+      "alu": 3.68,
+      "inox": 5.4,
+      "steel": 1.55
     }
   ]
 }

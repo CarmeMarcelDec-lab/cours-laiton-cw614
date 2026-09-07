@@ -1,72 +1,119 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baromètre Matières Premières - Carme Marcel Décolletage</title>
+  <title>Indicateur Matières | Carme Marcel Décolletage</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-dark: #0B0F17;
+      --card-bg: #131A26;
+      --card-border: #1E293B;
+      --accent-brass: #F59E0B;
+      --accent-alu: #3B82F6;
+      --accent-inox: #10B981;
+      --accent-steel: #94A3B8;
+      --text-main: #F1F5F9;
+      --text-muted: #64748B;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #0F172A;
-      color: #F8FAFC;
-      padding: 24px;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
       min-height: 100vh;
+      padding: 30px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 70%),
+        radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
     }
+
     .container {
-      max-width: 1100px;
-      margin: 0 auto;
+      max-width: 1000px;
+      width: 100%;
     }
+
     header {
-      margin-bottom: 24px;
-      border-bottom: 1px solid #334155;
-      padding-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      flex-wrap: wrap;
-      gap: 12px;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
     }
-    h1 {
+
+    .brand-title {
+      font-family: 'Chakra Petch', sans-serif;
       font-size: 1.5rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #F8FAFC;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
+    .brand-title span.tag {
+      font-size: 0.65rem;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.1em;
+    }
+
     .subtitle {
-      font-size: 0.875rem;
-      color: #94A3B8;
+      font-size: 0.85rem;
+      color: var(--text-muted);
       margin-top: 4px;
     }
-    .last-updated {
-      font-size: 0.8125rem;
-      color: #94A3B8;
-      background: #1E293B;
+
+    .update-badge {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: #0F172A;
       padding: 6px 12px;
-      border-radius: 6px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
     }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
+
     .card {
-      background: #1E293B;
-      border: 1px solid #334155;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 16px;
+      padding: 20px;
       position: relative;
       overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
     }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #334155;
+    }
+
     .card::before {
       content: '';
       position: absolute;
@@ -75,254 +122,230 @@
       width: 4px;
       height: 100%;
     }
-    /* Couleurs de cartes alignées sur la norme ISO 513 */
-    .card.steel::before { background-color: #2563EB; } /* ISO P - Bleu (Acier) */
-    .card.inox::before { background-color: #EAB308; }  /* ISO M - Jaune (Inox) */
-    .card.alu::before { background-color: #10B981; }   /* ISO N - Vert (Alu) */
-    .card.brass::before { background-color: #F59E0B; } /* ISO N - Ambre (Laiton) */
+
+    .card.brass::before { background-color: var(--accent-brass); }
+    .card.alu::before { background-color: var(--accent-alu); }
+    .card.inox::before { background-color: var(--accent-inox); }
+    .card.steel::before { background-color: var(--accent-steel); }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
     }
+
     .card-title {
-      font-size: 0.875rem;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.85rem;
       font-weight: 600;
-      color: #94A3B8;
-    }
-    .iso-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
+      color: var(--text-muted);
+      text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .badge-p { background: rgba(37, 99, 235, 0.2); color: #60A5FA; }
-    .badge-m { background: rgba(234, 179, 8, 0.2); color: #FDE047; }
-    .badge-n { background: rgba(16, 185, 129, 0.2); color: #34D399; }
-    .badge-brass { background: rgba(245, 158, 11, 0.2); color: #FBBF24; }
 
-    .price {
-      font-size: 1.5rem;
+    .card-norm {
+      font-size: 0.7rem;
+      color: #475569;
+    }
+
+    .card-value {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1.8rem;
       font-weight: 700;
-      color: #F8FAFC;
+      margin-top: 12px;
+      color: #FFF;
     }
-    .unit {
-      font-size: 0.875rem;
-      font-weight: 400;
-      color: #64748B;
-    }
-    .trend {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      margin-top: 6px;
-      display: inline-block;
-    }
-    .trend.up { color: #EF4444; }
-    .trend.down { color: #10B981; }
-    .trend.neutral { color: #64748B; }
 
-    .chart-container {
-      background: #1E293B;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 20px;
+    .card-unit {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 400;
     }
+
+    .chart-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
     .chart-title {
+      font-family: 'Chakra Petch', sans-serif;
       font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 16px;
-      color: #F8FAFC;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <header>
       <div>
-        <h1>Baromètre Matières Premières</h1>
-        <p class="subtitle">Carme Marcel Décolletage — Suivi des cours métaux</p>
+        <div class="brand-title">
+          Carme Marcel Décolletage
+          <span class="tag">AÉRONAUTIQUE & PRÉCISION</span>
+        </div>
+        <div class="subtitle">Baromètre des métaux de décolletage (€ HT / kg)</div>
       </div>
-      <div id="lastUpdated" class="last-updated">Mise à jour : --</div>
+      <div class="update-badge" id="update-date">Mise à jour : --</div>
     </header>
 
     <div class="grid">
-      <div class="card steel">
+      <div class="card brass">
         <div class="card-header">
-          <span class="card-title">Acier S300PB</span>
-          <span class="iso-badge badge-p">ISO P</span>
+          <span class="card-title">Laiton CW614N</span>
+          <span class="card-norm">CuZn39Pb3</span>
         </div>
-        <div class="price" id="price-steel">-- <span class="unit">€/kg</span></div>
-        <div class="trend" id="trend-steel">--</div>
-      </div>
-
-      <div class="card inox">
-        <div class="card-header">
-          <span class="card-title">Inox 303</span>
-          <span class="iso-badge badge-m">ISO M</span>
-        </div>
-        <div class="price" id="price-inox">-- <span class="unit">€/kg</span></div>
-        <div class="trend" id="trend-inox">--</div>
+        <div class="card-value" id="brass-val">-- <span class="card-unit">€ HT/kg</span></div>
       </div>
 
       <div class="card alu">
         <div class="card-header">
           <span class="card-title">Alu 2017A</span>
-          <span class="iso-badge badge-n">ISO N</span>
+          <span class="card-norm">AlCu4MgSi</span>
         </div>
-        <div class="price" id="price-alu">-- <span class="unit">€/kg</span></div>
-        <div class="trend" id="trend-alu">--</div>
+        <div class="card-value" id="alu-val">-- <span class="card-unit">€ HT/kg</span></div>
       </div>
 
-      <div class="card brass">
+      <div class="card inox">
         <div class="card-header">
-          <span class="card-title">Laiton CW614N</span>
-          <span class="iso-badge badge-brass">ISO N</span>
+          <span class="card-title">Inox 303</span>
+          <span class="card-norm">1.4305</span>
         </div>
-        <div class="price" id="price-brass">-- <span class="unit">€/kg</span></div>
-        <div class="trend" id="trend-brass">--</div>
+        <div class="card-value" id="inox-val">-- <span class="card-unit">€ HT/kg</span></div>
+      </div>
+
+      <div class="card steel">
+        <div class="card-header">
+          <span class="card-title">Acier S300PB</span>
+          <span class="card-norm">1.0718</span>
+        </div>
+        <div class="card-value" id="steel-val">-- <span class="card-unit">€ HT/kg</span></div>
       </div>
     </div>
 
-    <div class="chart-container">
-      <h2 class="chart-title">Évolution des prix (€/kg)</h2>
-      <canvas id="multiChart" height="110"></canvas>
+    <div class="chart-box">
+      <div class="chart-header">
+        <div class="chart-title">Évolution glissante (30 jours)</div>
+      </div>
+      <canvas id="multiChart" height="220"></canvas>
     </div>
+
+    <footer>
+      Données indicative calculées automatiquement selon cours boursiers (LME / CPER) et barèmes fournisseurs.
+    </footer>
   </div>
 
   <script>
-    async function loadData() {
-      try {
-        const response = await fetch('data.json?t=' + new Date().getTime());
-        const data = await response.json();
-        
-        if (!data || !data.history || data.history.length === 0) return;
+    fetch('./data.json')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('brass-val').innerHTML = `${data.current.brass_cw614_eur_kg} <span class="card-unit">€ HT/kg</span>`;
+        document.getElementById('alu-val').innerHTML = `${data.current.alu_2017_eur_kg} <span class="card-unit">€ HT/kg</span>`;
+        document.getElementById('inox-val').innerHTML = `${data.current.inox_303_eur_kg} <span class="card-unit">€ HT/kg</span>`;
+        document.getElementById('steel-val').innerHTML = `${data.current.steel_s300pb_eur_kg} <span class="card-unit">€ HT/kg</span>`;
 
-        const latest = data.history[data.history.length - 1];
-        const previous = data.history.length > 1 ? data.history[data.history.length - 2] : latest;
+        const dateObj = new Date(data.last_updated);
+        document.getElementById('update-date').innerText = `Dernière synchro : ${dateObj.toLocaleDateString('fr-FR')} ${dateObj.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}`;
 
-        // Date de mise à jour
-        document.getElementById('lastUpdated').innerText = 'Mise à jour : ' + (data.last_updated || latest.date);
+        const history = data.history || [];
+        const labels = history.map(i => i.date);
 
-        // Mise à jour des cartes
-        updateCard('steel', latest.s300pb, previous.s300pb);
-        updateCard('inox', latest.inox303, previous.inox303);
-        updateCard('alu', latest.alu2017, previous.alu2017);
-        updateCard('brass', latest.brass, previous.brass);
-
-        // Graphique
-        renderChart(data.history);
-      } catch (e) {
-        console.error('Erreur lors du chargement des données:', e);
-      }
-    }
-
-    function updateCard(id, current, prev) {
-      if (current === undefined) return;
-      document.getElementById(`price-${id}`).innerHTML = `${current.toFixed(2)} <span class="unit">€/kg</span>`;
-      
-      const diff = current - prev;
-      const pct = prev > 0 ? ((diff / prev) * 100).toFixed(1) : 0;
-      const trendEl = document.getElementById(`trend-${id}`);
-
-      if (diff > 0) {
-        trendEl.className = 'trend up';
-        trendEl.innerText = `▲ +${diff.toFixed(2)} € (+${pct}%)`;
-      } else if (diff < 0) {
-        trendEl.className = 'trend down';
-        trendEl.innerText = `▼ ${diff.toFixed(2)} € (${pct}%)`;
-      } else {
-        trendEl.className = 'trend neutral';
-        trendEl.innerText = '= Égal';
-      }
-    }
-
-    function renderChart(history) {
-      const labels = history.map(item => item.date);
-      const ctx = document.getElementById('multiChart').getContext('2d');
-
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Acier S300PB (ISO P)',
-              data: history.map(i => i.s300pb),
-              borderColor: '#2563EB', // BLEU ISO 513
-              backgroundColor: 'rgba(37, 99, 235, 0.1)',
-              borderWidth: 2,
-              pointRadius: 3,
-              tension: 0.2
-            },
-            {
-              label: 'Inox 303 (ISO M)',
-              data: history.map(i => i.inox303),
-              borderColor: '#EAB308', // JAUNE ISO 513
-              backgroundColor: 'rgba(234, 179, 8, 0.1)',
-              borderWidth: 2,
-              pointRadius: 3,
-              tension: 0.2
-            },
-            {
-              label: 'Alu 2017A (ISO N)',
-              data: history.map(i => i.alu2017),
-              borderColor: '#10B981', // VERT ISO 513
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              borderWidth: 2,
-              pointRadius: 3,
-              tension: 0.2
-            },
-            {
-              label: 'Laiton CW614N (ISO N)',
-              data: history.map(i => i.brass),
-              borderColor: '#F59E0B', // AMBRE / LAITON
-              backgroundColor: 'rgba(245, 158, 11, 0.1)',
-              borderWidth: 2,
-              pointRadius: 3,
-              tension: 0.2
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              labels: {
-                color: '#94A3B8',
-                font: { family: 'Inter', size: 12 }
+        const ctx = document.getElementById('multiChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Laiton CW614N',
+                data: history.map(i => i.brass),
+                borderColor: '#F59E0B',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              },
+              {
+                label: 'Alu 2017A',
+                data: history.map(i => i.alu2017),
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              },
+              {
+                label: 'Inox 303',
+                data: history.map(i => i.inox303),
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              },
+              {
+                label: 'Acier S300PB',
+                data: history.map(i => i.s300pb),
+                borderColor: '#94A3B8',
+                backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#94A3B8',
+                  font: { family: 'Inter', size: 12 }
+                }
+              },
+              tooltip: {
+                backgroundColor: '#0F172A',
+                titleColor: '#F8FAFC',
+                bodyColor: '#CBD5E1',
+                borderColor: '#1E293B',
+                borderWidth: 1,
+                padding: 10
               }
             },
-            tooltip: {
-              backgroundColor: '#0F172A',
-              titleColor: '#F8FAFC',
-              bodyColor: '#CBD5E1',
-              borderColor: '#334155',
-              borderWidth: 1,
-              padding: 10
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: 'rgba(51, 65, 85, 0.5)' },
-              ticks: { color: '#64748B', font: { family: 'Inter', size: 11 } }
-            },
-            y: {
-              grid: { color: 'rgba(51, 65, 85, 0.5)' },
-              ticks: { 
-                color: '#64748B', 
-                font: { family: 'Inter', size: 11 },
-                callback: function(value) { return value + ' €'; }
+            scales: {
+              x: {
+                grid: { color: 'rgba(30, 41, 59, 0.5)' },
+                ticks: { color: '#64748B', font: { family: 'Inter', size: 11 } }
+              },
+              y: {
+                grid: { color: 'rgba(30, 41, 59, 0.5)' },
+                ticks: { 
+                  color: '#64748B', 
+                  font: { family: 'Inter', size: 11 },
+                  callback: function(value) { return value + ' €'; }
+                }
               }
             }
           }
-        }
+        });
       });
-    }
-
-    loadData();
   </script>
 </body>
 </html>

@@ -1,75 +1,349 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indicateur Matières Décolletage</title>
+  <title>Indicateur Matières | Carme Marcel Décolletage</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; padding: 20px; display: flex; justify-content: center; }
-    .dashboard { max-width: 900px; width: 100%; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 20px 0; }
-    .card { background: #fff; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
-    .card-title { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-    .card-value { font-size: 1.5rem; font-weight: 700; margin-top: 6px; }
-    .chart-container { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; }
+    :root {
+      --bg-dark: #0B0F17;
+      --card-bg: #131A26;
+      --card-border: #1E293B;
+      --accent-brass: #F59E0B;
+      --accent-alu: #3B82F6;
+      --accent-inox: #10B981;
+      --accent-steel: #94A3B8;
+      --text-main: #F1F5F9;
+      --text-muted: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 30px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 70%),
+        radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .brand-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title span.tag {
+      font-size: 0.65rem;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.1em;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .update-badge {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: #0F172A;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #334155;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
+
+    .card.brass::before { background-color: var(--accent-brass); }
+    .card.alu::before { background-color: var(--accent-alu); }
+    .card.inox::before { background-color: var(--accent-inox); }
+    .card.steel::before { background-color: var(--accent-steel); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-norm {
+      font-size: 0.7rem;
+      color: #475569;
+    }
+
+    .card-value {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 12px;
+      color: #FFF;
+    }
+
+    .card-unit {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .chart-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .chart-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
-  <div class="dashboard">
-    <h2>Baromètre Matières Décolletage (€/kg)</h2>
-    <p id="update-date" style="color: #64748b; font-size: 0.85rem;">Mise à jour...</p>
+
+  <div class="container">
+    <header>
+      <div>
+        <div class="brand-title">
+          Carme Marcel Décolletage
+          <span class="tag">AÉRONAUTIQUE & PRÉCISION</span>
+        </div>
+        <div class="subtitle">Baromètre des métaux de décolletage (€ HT / kg)</div>
+      </div>
+      <div class="update-badge" id="update-date">Mise à jour : --</div>
+    </header>
 
     <div class="grid">
-      <div class="card" style="border-left: 4px solid #d97706;">
-        <div class="card-title">Laiton CW614N</div>
-        <div class="card-value" id="brass-val">-- €</div>
+      <div class="card brass">
+        <div class="card-header">
+          <span class="card-title">Laiton CW614N</span>
+          <span class="card-norm">CuZn39Pb3</span>
+        </div>
+        <div class="card-value" id="brass-val">-- <span class="card-unit">€ HT/kg</span></div>
       </div>
-      <div class="card" style="border-left: 4px solid #2563eb;">
-        <div class="card-title">Alu 2017A</div>
-        <div class="card-value" id="alu-val">-- €</div>
+
+      <div class="card alu">
+        <div class="card-header">
+          <span class="card-title">Alu 2017A</span>
+          <span class="card-norm">AlCu4MgSi</span>
+        </div>
+        <div class="card-value" id="alu-val">-- <span class="card-unit">€ HT/kg</span></div>
       </div>
-      <div class="card" style="border-left: 4px solid #059669;">
-        <div class="card-title">Inox 303 (1.4305)</div>
-        <div class="card-value" id="inox-val">-- €</div>
+
+      <div class="card inox">
+        <div class="card-header">
+          <span class="card-title">Inox 303</span>
+          <span class="card-norm">1.4305</span>
+        </div>
+        <div class="card-value" id="inox-val">-- <span class="card-unit">€ HT/kg</span></div>
       </div>
-      <div class="card" style="border-left: 4px solid #475569;">
-        <div class="card-title">Acier S300PB</div>
-        <div class="card-value" id="steel-val">-- €</div>
+
+      <div class="card steel">
+        <div class="card-header">
+          <span class="card-title">Acier S300PB</span>
+          <span class="card-norm">1.0718</span>
+        </div>
+        <div class="card-value" id="steel-val">-- <span class="card-unit">€ HT/kg</span></div>
       </div>
     </div>
 
-    <div class="chart-container">
-      <canvas id="multiChart" height="200"></canvas>
+    <div class="chart-box">
+      <div class="chart-header">
+        <div class="chart-title">Évolution glissante (30 jours)</div>
+      </div>
+      <canvas id="multiChart" height="220"></canvas>
     </div>
+
+    <footer>
+      Données indicative calculées automatiquement selon cours boursiers (LME / CPER) et barèmes fournisseurs.
+    </footer>
   </div>
 
   <script>
     fetch('./data.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('brass-val').innerText = `${data.current.brass_cw614_eur_kg} €`;
-        document.getElementById('alu-val').innerText = `${data.current.alu_2017_eur_kg} €`;
-        document.getElementById('inox-val').innerText = `${data.current.inox_303_eur_kg} €`;
-        document.getElementById('steel-val').innerText = `${data.current.steel_s300pb_eur_kg} €`;
+        document.getElementById('brass-val').innerHTML = `${data.current.brass_cw614_eur_kg} <span class="card-unit">€ HT/kg</span>`;
+        document.getElementById('alu-val').innerHTML = `${data.current.alu_2017_eur_kg} <span class="card-unit">€ HT/kg</span>`;
+        document.getElementById('inox-val').innerHTML = `${data.current.inox_303_eur_kg} <span class="card-unit">€ HT/kg</span>`;
+        document.getElementById('steel-val').innerHTML = `${data.current.steel_s300pb_eur_kg} <span class="card-unit">€ HT/kg</span>`;
 
-        document.getElementById('update-date').innerText = `Dernière mise à jour : ${new Date(data.last_updated).toLocaleString('fr-FR')}`;
+        const dateObj = new Date(data.last_updated);
+        document.getElementById('update-date').innerText = `Dernière synchro : ${dateObj.toLocaleDateString('fr-FR')} ${dateObj.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}`;
 
         const history = data.history || [];
         const labels = history.map(i => i.date);
 
-        new Chart(document.getElementById('multiChart').getContext('2d'), {
+        const ctx = document.getElementById('multiChart').getContext('2d');
+        new Chart(ctx, {
           type: 'line',
           data: {
             labels: labels,
             datasets: [
-              { label: 'Laiton CW614N', data: history.map(i => i.brass), borderColor: '#d97706', tension: 0.2 },
-              { label: 'Alu 2017A', data: history.map(i => i.alu2017), borderColor: '#2563eb', tension: 0.2 },
-              { label: 'Inox 303', data: history.map(i => i.inox303), borderColor: '#059669', tension: 0.2 },
-              { label: 'Acier S300PB', data: history.map(i => i.s300pb), borderColor: '#475569', tension: 0.2 }
+              {
+                label: 'Laiton CW614N',
+                data: history.map(i => i.brass),
+                borderColor: '#F59E0B',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              },
+              {
+                label: 'Alu 2017A',
+                data: history.map(i => i.alu2017),
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              },
+              {
+                label: 'Inox 303',
+                data: history.map(i => i.inox303),
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              },
+              {
+                label: 'Acier S300PB',
+                data: history.map(i => i.s300pb),
+                borderColor: '#94A3B8',
+                backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              }
             ]
           },
-          options: { responsive: true }
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#94A3B8',
+                  font: { family: 'Inter', size: 12 }
+                }
+              },
+              tooltip: {
+                backgroundColor: '#0F172A',
+                titleColor: '#F8FAFC',
+                bodyColor: '#CBD5E1',
+                borderColor: '#1E293B',
+                borderWidth: 1,
+                padding: 10
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(30, 41, 59, 0.5)' },
+                ticks: { color: '#64748B', font: { family: 'Inter', size: 11 } }
+              },
+              y: {
+                grid: { color: 'rgba(30, 41, 59, 0.5)' },
+                ticks: { 
+                  color: '#64748B', 
+                  font: { family: 'Inter', size: 11 },
+                  callback: function(value) { return value + ' €'; }
+                }
+              }
+            }
+          }
         });
       });
   </script>

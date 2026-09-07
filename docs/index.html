@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baromètre Matières - Carme Marcel Décolletage</title>
+  <title>Baromètre Matières Premières - Carme Marcel Décolletage</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
     }
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #0B0F17;
+      background-color: #0F172A;
       color: #F8FAFC;
       padding: 24px;
       min-height: 100vh;
@@ -27,7 +27,7 @@
     }
     header {
       margin-bottom: 24px;
-      border-bottom: 1px solid #1E293B;
+      border-bottom: 1px solid #334155;
       padding-bottom: 16px;
       display: flex;
       justify-content: space-between;
@@ -43,7 +43,7 @@
     }
     .subtitle {
       font-size: 0.875rem;
-      color: #64748B;
+      color: #94A3B8;
       margin-top: 4px;
     }
     .last-updated {
@@ -60,8 +60,8 @@
       margin-bottom: 24px;
     }
     .card {
-      background: #0F172A;
-      border: 1px solid #1E293B;
+      background: #1E293B;
+      border: 1px solid #334155;
       border-radius: 12px;
       padding: 16px;
       position: relative;
@@ -75,7 +75,7 @@
       width: 4px;
       height: 100%;
     }
-    /* Couleurs des bordures de cartes selon ISO 513 */
+    /* Couleurs de cartes alignées sur la norme ISO 513 */
     .card.steel::before { background-color: #2563EB; } /* ISO P - Bleu (Acier) */
     .card.inox::before { background-color: #EAB308; }  /* ISO M - Jaune (Inox) */
     .card.alu::before { background-color: #10B981; }   /* ISO N - Vert (Alu) */
@@ -125,8 +125,8 @@
     .trend.neutral { color: #64748B; }
 
     .chart-container {
-      background: #0F172A;
-      border: 1px solid #1E293B;
+      background: #1E293B;
+      border: 1px solid #334155;
       border-radius: 12px;
       padding: 20px;
     }
@@ -142,8 +142,8 @@
   <div class="container">
     <header>
       <div>
-        <h1>Baromètre Cours des Matières Premières</h1>
-        <p class="subtitle">Carme Marcel Décolletage - Classification ISO 513</p>
+        <h1>Baromètre Matières Premières</h1>
+        <p class="subtitle">Carme Marcel Décolletage — Suivi des cours métaux</p>
       </div>
       <div id="lastUpdated" class="last-updated">Mise à jour : --</div>
     </header>
@@ -251,7 +251,7 @@
             {
               label: 'Acier S300PB (ISO P)',
               data: history.map(i => i.s300pb),
-              borderColor: '#2563EB', // BLEU ISO 513 (Groupe P - Aciers)
+              borderColor: '#2563EB', // BLEU ISO 513
               backgroundColor: 'rgba(37, 99, 235, 0.1)',
               borderWidth: 2,
               pointRadius: 3,
@@ -260,7 +260,7 @@
             {
               label: 'Inox 303 (ISO M)',
               data: history.map(i => i.inox303),
-              borderColor: '#EAB308', // JAUNE ISO 513 (Groupe M - Inox)
+              borderColor: '#EAB308', // JAUNE ISO 513
               backgroundColor: 'rgba(234, 179, 8, 0.1)',
               borderWidth: 2,
               pointRadius: 3,
@@ -269,7 +269,7 @@
             {
               label: 'Alu 2017A (ISO N)',
               data: history.map(i => i.alu2017),
-              borderColor: '#10B981', // VERT ISO 513 (Groupe N - Non ferreux)
+              borderColor: '#10B981', // VERT ISO 513
               backgroundColor: 'rgba(16, 185, 129, 0.1)',
               borderWidth: 2,
               pointRadius: 3,
@@ -278,7 +278,7 @@
             {
               label: 'Laiton CW614N (ISO N)',
               data: history.map(i => i.brass),
-              borderColor: '#F59E0B', // AMBRE / LAITON (Dérivé Groupe N)
+              borderColor: '#F59E0B', // AMBRE / LAITON
               backgroundColor: 'rgba(245, 158, 11, 0.1)',
               borderWidth: 2,
               pointRadius: 3,
@@ -299,18 +299,18 @@
               backgroundColor: '#0F172A',
               titleColor: '#F8FAFC',
               bodyColor: '#CBD5E1',
-              borderColor: '#1E293B',
+              borderColor: '#334155',
               borderWidth: 1,
               padding: 10
             }
           },
           scales: {
             x: {
-              grid: { color: 'rgba(30, 41, 59, 0.5)' },
+              grid: { color: 'rgba(51, 65, 85, 0.5)' },
               ticks: { color: '#64748B', font: { family: 'Inter', size: 11 } }
             },
             y: {
-              grid: { color: 'rgba(30, 41, 59, 0.5)' },
+              grid: { color: 'rgba(51, 65, 85, 0.5)' },
               ticks: { 
                 color: '#64748B', 
                 font: { family: 'Inter', size: 11 },

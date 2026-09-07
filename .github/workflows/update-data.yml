@@ -4,7 +4,7 @@ on:
   schedule:
     # S'exécute du lundi au vendredi à 18h00 UTC
     - cron: '0 18 * * 1-5'
-  workflow_dispatch: # Permet de déclencher l'action manuellement depuis GitHub
+  workflow_dispatch: # Permet le déclenchement manuel
 
 jobs:
   build-and-deploy:
@@ -19,15 +19,14 @@ jobs:
       - name: Configuration de Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Assurer l'existence du dossier public
         run: mkdir -p public
 
       - name: Récupération des données via l'API
         env:
-          # Assure-toi que le nom de ton secret dans GitHub correspond à ceci
-          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }} 
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: node fetch-data.js
 
       - name: Commit et Push du fichier data.json

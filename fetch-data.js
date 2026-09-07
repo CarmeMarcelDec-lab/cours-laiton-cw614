@@ -9,7 +9,6 @@ if (!API_KEY) {
 
 async function fetchBrassData() {
   try {
-    // Utilisation de l'ETF Cuivre (CPER) accessible gratuitement
     const copperUrl = `https://api.twelvedata.com/time_series?symbol=CPER&interval=1day&outputsize=1&apikey=${API_KEY}`;
     const copperResponse = await fetch(copperUrl);
     const copperData = await copperResponse.json();
@@ -18,10 +17,8 @@ async function fetchBrassData() {
       throw new Error(`Erreur API CPER : ${copperData.message || JSON.stringify(copperData)}`);
     }
 
-    // Prix de l'action ETF CPER en USD
     const cperPriceUsd = parseFloat(copperData.values[0].close);
 
-    // Récupération du taux EUR/USD
     let eurUsdRate = 1.08;
     try {
       const eurUsdUrl = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${API_KEY}`;
@@ -34,9 +31,6 @@ async function fetchBrassData() {
       console.warn("Utilisation du taux EUR/USD par défaut (1.08)");
     }
 
-    // Ratio d'estimation : Le cours du laiton de décolletage (CW614N) en €/kg 
-    // suit une corrélation directe avec l'indice CPER.
-    // Coefficient ajusté sur la valeur moyenne du barreau de laiton (~11 €/kg).
     const estimatedBrassEurPerKg = (cperPriceUsd * 0.38) / eurUsdRate + 1.50;
     const estimatedCopperEurKg = (cperPriceUsd * 0.38) / eurUsdRate;
 
@@ -48,12 +42,13 @@ async function fetchBrassData() {
       eur_usd_rate: eurUsdRate.toFixed(4)
     };
 
-    if (!fs.existsSync('./public')) {
-      fs.mkdirSync('./public');
+    // On sauvegarde dans docs/ au lieu de public/
+    if (!fs.existsSync('./docs')) {
+      fs.mkdirSync('./docs');
     }
 
-    fs.writeFileSync('./public/data.json', JSON.stringify(result, null, 2));
-    console.log('Succès ! Fichier data.json généré avec succès :', result);
+    fs.writeFileSync('./docs/data.json', JSON.stringify(result, null, 2));
+    console.log('Succès ! Fichier data.json généré dans ./docs :', result);
 
   } catch (error) {
     console.error('Échec de la récupération :', error.message);

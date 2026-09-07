@@ -9,28 +9,35 @@ if (!API_KEY) {
 
 async function fetchBrassData() {
   try {
-    // 1. Récupération du cours du Cuivre (Symbole 'COPPER' chez Twelve Data)
-    const copperUrl = `https://api.twelvedata.com/price?symbol=COPPER&apikey=${API_KEY}`;
+    // 1. Récupération du cours du Cuivre via /time_series (plus stable sur le plan gratuit)
+    const copperUrl = `https://api.twelvedata.com/time_series?symbol=COPPER&interval=1day&outputsize=1&apikey=${API_KEY}`;
     const copperResponse = await fetch(copperUrl);
     const copperData = await copperResponse.json();
 
-    if (copperData.status === 'error' || !copperData.price) {
+    if (copperData.status === 'error' || !copperData.values || !copperData.values[0]) {
       throw new Error(`Erreur API Cuivre : ${copperData.message || JSON.stringify(copperData)}`);
     }
 
-    // 2. Récupération du taux de change EUR/USD pour convertir en Euros
-    const eurUsdUrl = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${API_KEY}`;
-    const eurUsdResponse = await fetch(eurUsdUrl);
-    const eurUsdData = await eurUsdResponse.json();
+    const copperUsdPerLb = parseFloat(copperData.values[0].close);
 
-    const copperUsdPerLb = parseFloat(copperData.price);
-    const eurUsdRate = parseFloat(eurUsdData.price || 1.08); // Valeur par défaut si échec
-    
+    // 2. Récupération du taux de change EUR/USD
+    let eurUsdRate = 1.08; // Valeur par défaut
+    try {
+      const eurUsdUrl = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${API_KEY}`;
+      const eurUsdResponse = await fetch(eurUsdUrl);
+      const eurUsdData = await eurUsdResponse.json();
+      if (eurUsdData.price) {
+        eurUsdRate = parseFloat(eurUsdData.price);
+      }
+    } catch (e) {
+      console.warn("Impossible de récupérer le taux EUR/USD exact, utilisation du taux par défaut (1.08)");
+    }
+
     // Conversions : 1 lb = 0.453592 kg
     const copperUsdPerKg = copperUsdPerLb / 0.453592;
     const copperEurPerKg = copperUsdPerKg / eurUsdRate;
 
-    // Estimation CW614N (58% Cuivre + 39% Zinc/Plomb/Marge transformation ~1.50€/kg)
+    // Estimation CW614N (58% Cuivre + composante Zinc/transformation)
     const estimatedBrassEurPerKg = (copperEurPerKg * 0.58) + 1.80;
 
     const result = {

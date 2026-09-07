@@ -8,7 +8,7 @@ if (!API_KEY) {
   process.exit(1);
 }
 
-async function fetchMultiMetalData() {
+async function fetchHistoricalData() {
   try {
     // 1. Taux EUR/USD
     let eurUsdRate = 1.08;
@@ -20,66 +20,57 @@ async function fetchMultiMetalData() {
       console.warn("EUR/USD par défaut : 1.08");
     }
 
-    // 2. Cuivre (CPER ETF)
-    const copperRes = await fetch(`https://api.twelvedata.com/time_series?symbol=CPER&interval=1day&outputsize=1&apikey=${API_KEY}`);
+    // 2. Récupération des 30 derniers jours de cotation sur le Cuivre (CPER)
+    const copperUrl = `https://api.twelvedata.com/time_series?symbol=CPER&interval=1day&outputsize=30&apikey=${API_KEY}`;
+    const copperRes = await fetch(copperUrl);
     const copperData = await copperRes.json();
-    const cperUsd = parseFloat(copperData.values[0].close);
-    const copperEurKg = (cperUsd * 0.38) / eurUsdRate; // ~8,20 €/kg
 
-    // 3. Calculs des barres métaux (€/kg)
-    
-    // LAITON CW614N :
-    // rawBrassEurKg = ~8,69 €/kg. Multiplié par 1.278 = 11,11 €/kg (Base laiton fournisseur).
-    // On ajoute ensuite 0.65 €/kg (Base transformation).
-    const rawBrassEurKg = (copperEurKg * 0.585) + (2.70 * 0.39);
-    const brassBaseSupplier = rawBrassEurKg * 1.278; // Calé exactement sur 11,11 €/kg
-    const brassCw614 = brassBaseSupplier + 0.65;    // Total = 11,76 €/kg
-
-    // ALU 2017A (Barres étirées décolletage)
-    const aluLmeEurKg = 2.35 / eurUsdRate;
-    const alu2017 = (aluLmeEurKg * 1.35) + 0.90; // ~3,63 €/kg
-
-    // INOX 303 (1.4305)
-    const inox303 = 2.10 + (copperEurKg * 0.18) + 0.95; // ~4,50 €/kg
-
-    // ACIER S300PB (1.0718 / 11SMnPb30)
-    const steelS300pb = 0.95 + 0.60; // ~1,55 €/kg
-
-    const todayStr = new Date().toISOString().split('T')[0];
-
-    // 4. Historique
-    const newEntry = {
-      date: todayStr,
-      brass: parseFloat(brassCw614.toFixed(2)),
-      alu2017: parseFloat(alu2017.toFixed(2)),
-      inox303: parseFloat(inox303.toFixed(2)),
-      s300pb: parseFloat(steelS300pb.toFixed(2))
-    };
-
-    let history = [];
-    if (fs.existsSync(path)) {
-      try {
-        const fileContent = JSON.parse(fs.readFileSync(path, 'utf8'));
-        if (Array.isArray(fileContent.history)) history = fileContent.history;
-      } catch (e) {}
+    if (!copperData.values || !Array.isArray(copperData.values)) {
+      throw new Error("Impossible de récupérer la série temporelle CPER");
     }
 
-    const existingIndex = history.findIndex(item => item.date === todayStr);
-    if (existingIndex >= 0) {
-      history[existingIndex] = newEntry;
-    } else {
-      history.push(newEntry);
-    }
+    // Les données de l'API arrivent du plus récent au plus ancien, on inverse pour l'ordre chronologique
+    const historicalValues = copperData.values.reverse();
 
-    if (history.length > 30) history = history.slice(-30);
+    // 3. Calcul rétroactif pour chaque journée de l'historique
+    const history = historicalValues.map(entry => {
+      const dateStr = entry.datetime;
+      const cperUsd = parseFloat(entry.close);
+      const copperEurKg = (cperUsd * 0.38) / eurUsdRate;
+
+      // LAITON CW614N (Base 11,11 € + 0,65 € transfo)
+      const rawBrassEurKg = (copperEurKg * 0.585) + (2.70 * 0.39);
+      const brassBaseSupplier = rawBrassEurKg * 1.278;
+      const brassCw614 = brassBaseSupplier + 0.65;
+
+      // ALU 2017A
+      const aluLmeEurKg = 2.35 / eurUsdRate;
+      const alu2017 = (aluLmeEurKg * 1.35) + 0.90;
+
+      // INOX 303 (1.4305)
+      const inox303 = 2.10 + (copperEurKg * 0.18) + 0.95;
+
+      // ACIER S300PB
+      const steelS300pb = 0.95 + 0.60;
+
+      return {
+        date: dateStr,
+        brass: parseFloat(brassCw614.toFixed(2)),
+        alu2017: parseFloat(alu2017.toFixed(2)),
+        inox303: parseFloat(inox303.toFixed(2)),
+        s300pb: parseFloat(steelS300pb.toFixed(2))
+      };
+    });
+
+    const latest = history[history.length - 1];
 
     const output = {
       last_updated: new Date().toISOString(),
       current: {
-        brass_cw614_eur_kg: brassCw614.toFixed(2),
-        alu_2017_eur_kg: alu2017.toFixed(2),
-        inox_303_eur_kg: inox303.toFixed(2),
-        steel_s300pb_eur_kg: steelS300pb.toFixed(2),
+        brass_cw614_eur_kg: latest.brass.toFixed(2),
+        alu_2017_eur_kg: latest.alu2017.toFixed(2),
+        inox_303_eur_kg: latest.inox303.toFixed(2),
+        steel_s300pb_eur_kg: latest.s300pb.toFixed(2),
         eur_usd_rate: eurUsdRate.toFixed(4)
       },
       history: history
@@ -87,12 +78,12 @@ async function fetchMultiMetalData() {
 
     if (!fs.existsSync('./docs')) fs.mkdirSync('./docs');
     fs.writeFileSync(path, JSON.stringify(output, null, 2));
-    console.log('Mise à jour réussie :', output.current);
+    console.log(`Succès ! Historique de ${history.length} jours généré.`);
 
   } catch (error) {
-    console.error('Erreur lors du calcul :', error.message);
+    console.error('Erreur lors du calcul historique :', error.message);
     process.exit(1);
   }
 }
 
-fetchMultiMetalData();
+fetchHistoricalData();

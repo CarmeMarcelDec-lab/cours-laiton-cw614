@@ -3,100 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indicateur Laiton CW614N</title>
+  <title>Indicateur Laiton CW614N & Métaux</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --border: #e2e8f0;
+      --primary: #d97706;
+      --copper: #c2410c;
+      --zinc: #475569;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f4f6f8;
+      background-color: var(--bg);
+      color: var(--text);
       margin: 0;
-      padding: 40px 20px;
+      padding: 30px 15px;
       display: flex;
       justify-content: center;
     }
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      max-width: 480px;
+
+    .dashboard {
+      max-width: 720px;
       width: 100%;
     }
-    h1 {
-      font-size: 1.3rem;
-      margin-top: 0;
-      color: #1a1a1a;
-      border-bottom: 2px solid #e1e4e8;
-      padding-bottom: 10px;
+
+    .header {
+      margin-bottom: 24px;
     }
-    .price-box {
-      margin: 15px 0;
-      padding: 15px;
-      background-color: #f8f9fa;
-      border-left: 4px solid #d97706;
-      border-radius: 4px;
+
+    .header h1 {
+      font-size: 1.5rem;
+      margin: 0 0 6px 0;
     }
-    .price-box.primary {
-      border-left-color: #2563eb;
-      background-color: #eff6ff;
+
+    .header p {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin: 0;
     }
-    .price-value {
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .card.main {
+      border-left: 4px solid var(--primary);
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-value {
       font-size: 1.8rem;
-      font-weight: bold;
-      color: #1e40af;
-      margin-top: 5px;
+      font-weight: 700;
+      margin-top: 8px;
     }
-    .sub-value {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #b45309;
-      margin-top: 5px;
+
+    .card-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 4px;
     }
-    .label {
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-    .updated {
-      font-size: 0.8rem;
-      color: #6b7280;
-      margin-top: 20px;
+
+    .chart-container {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1>Laiton CW614N (CuZn39Pb3)</h1>
-    <div id="content">Chargement des cours...</div>
+  <div class="dashboard">
+    <div class="header">
+      <h1>Cours Laiton CW614N (CuZn39Pb3)</h1>
+      <p id="update-date">Mise à jour : chargement...</p>
+    </div>
+
+    <div class="grid">
+      <div class="card main">
+        <div class="card-title">Barres Laiton (Est.)</div>
+        <div class="card-value" id="brass-val" style="color: var(--primary);">-- €</div>
+        <div class="card-sub">Prix / kg (Base étiré)</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Composante Cuivre</div>
+        <div class="card-value" id="copper-val" style="color: var(--copper);">-- €</div>
+        <div class="card-sub">Prix / kg (58.5% alliage)</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Composante Zinc</div>
+        <div class="card-value" id="zinc-val" style="color: var(--zinc);">-- €</div>
+        <div class="card-sub">Prix / kg (39% alliage)</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="priceChart" height="220"></canvas>
+    </div>
   </div>
 
   <script>
     fetch('./data.json')
-      .then(res => {
-        if (!res.ok) throw new Error("Fichier data.json introuvable");
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
+        // Remplissage des cartes
+        document.getElementById('brass-val').innerText = `${data.current.brass_cw614_eur_kg} €`;
+        document.getElementById('copper-val').innerText = `${data.current.copper_eur_kg} €`;
+        document.getElementById('zinc-val').innerText = `${data.current.zinc_eur_kg} €`;
+
         const dateFormatted = new Date(data.last_updated).toLocaleString('fr-FR', {
-          dateStyle: 'medium',
+          dateStyle: 'long',
           timeStyle: 'short'
         });
+        document.getElementById('update-date').innerText = `Dernière mise à jour : ${dateFormatted} (EUR/USD: ${data.current.eur_usd_rate})`;
 
-        document.getElementById('content').innerHTML = `
-          <div class="price-box primary">
-            <div class="label">Estimation Barres Laiton CW614N :</div>
-            <div class="price-value">~ ${data.brass_cw614_eur_kg} € / kg</div>
-          </div>
+        // Graphique
+        const history = data.history || [];
+        const labels = history.map(item => item.date);
+        const brassData = history.map(item => item.brass);
+        const copperData = history.map(item => item.copper);
 
-          <div class="price-box">
-            <div class="label">Cours du Cuivre (Base COMEX) :</div>
-            <div class="sub-value">${data.copper_eur_kg} € / kg <span style="font-size: 0.8rem; font-weight: normal;">($${data.copper_usd_lb}/lb)</span></div>
-          </div>
-
-          <p class="updated">Dernière mise à jour : ${dateFormatted}<br>Taux EUR/USD : ${data.eur_usd_rate}</p>
-        `;
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Laiton CW614N (€/kg)',
+                data: brassData,
+                borderColor: '#d97706',
+                backgroundColor: 'rgba(217, 119, 6, 0.05)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.2
+              },
+              {
+                label: 'Cuivre (€/kg)',
+                data: copperData,
+                borderColor: '#c2410c',
+                borderWidth: 1.5,
+                borderDash: [4, 4],
+                fill: false,
+                tension: 0.2
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' }
+            },
+            scales: {
+              y: {
+                beginAtZero: false,
+                grid: { color: '#f1f5f9' }
+              },
+              x: {
+                grid: { display: false }
+              }
+            }
+          }
+        });
       })
       .catch(err => {
-        document.getElementById('content').innerHTML = `<p style="color:red;">Erreur : ${err.message}</p>`;
+        console.error("Erreur de chargement :", err);
       });
   </script>
 

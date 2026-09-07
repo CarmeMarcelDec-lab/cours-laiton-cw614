@@ -1,19 +1,19 @@
 {
-  "last_updated": "2026-09-07T17:22:46.875Z",
+  "last_updated": "2026-09-07T17:24:42.184Z",
   "current": {
     "brass_cw614_eur_kg": "16.47",
-    "alu_2011_eur_kg": "3.68",
+    "alu_2017_eur_kg": "3.63",
     "inox_303_eur_kg": "5.40",
-    "steel_11smnpb30_eur_kg": "1.55",
+    "steel_s300pb_eur_kg": "1.55",
     "eur_usd_rate": "1.1626"
   },
   "history": [
     {
       "date": "2026-09-07",
       "brass": 16.47,
-      "alu": 3.68,
-      "inox": 5.4,
-      "steel": 1.55
+      "alu2017": 3.63,
+      "inox303": 5.4,
+      "s300pb": 1.55
     }
   ]
 }

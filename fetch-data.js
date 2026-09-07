@@ -28,13 +28,16 @@ async function fetchMultiMetalData() {
 
     // 3. Calculs des barres métaux (€/kg)
     
-    // LAITON CW614N (Base 11,11€ + 0,65€ transfo = ~11,76€)
+    // LAITON CW614N :
+    // rawBrassEurKg = ~8,69 €/kg. Multiplié par 1.278 = 11,11 €/kg (Base laiton fournisseur).
+    // On ajoute ensuite 0.65 €/kg (Base transformation).
     const rawBrassEurKg = (copperEurKg * 0.585) + (2.70 * 0.39);
-    const brassCw614 = rawBrassEurKg + 0.65; // ~11,76 €/kg (sans le multiplicateur 1.82)
+    const brassBaseSupplier = rawBrassEurKg * 1.278; // Calé exactement sur 11,11 €/kg
+    const brassCw614 = brassBaseSupplier + 0.65;    // Total = 11,76 €/kg
 
     // ALU 2017A (Barres étirées décolletage)
     const aluLmeEurKg = 2.35 / eurUsdRate;
-    const alu2017 = (aluLmeEurKg * 1.35) + 0.90; // ~3,80 €/kg
+    const alu2017 = (aluLmeEurKg * 1.35) + 0.90; // ~3,63 €/kg
 
     // INOX 303 (1.4305)
     const inox303 = 2.10 + (copperEurKg * 0.18) + 0.95; // ~4,50 €/kg

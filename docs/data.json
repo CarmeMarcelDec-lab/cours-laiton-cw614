@@ -1,16 +1,16 @@
 {
-  "last_updated": "2026-09-07T16:14:33.678Z",
+  "last_updated": "2026-09-07T16:20:25.951Z",
   "current": {
-    "brass_cw614_eur_kg": "18.11",
-    "copper_eur_kg": "13.06",
+    "brass_cw614_eur_kg": "16.74",
+    "copper_eur_kg": "11.74",
     "zinc_eur_kg": "23.01",
     "eur_usd_rate": "1.1627"
   },
   "history": [
     {
       "date": "2026-09-07",
-      "brass": 18.11,
-      "copper": 13.06,
+      "brass": 16.74,
+      "copper": 11.74,
       "zinc": 23.01
     }
   ]

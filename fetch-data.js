@@ -28,25 +28,56 @@ async function fetchBrassData() {
       console.warn("Taux EUR/USD par défaut (1.08)");
     }
 
-    // 3. Calculs physiques directs (€/kg)
-    // CPER tourne autour de 25-28 $. On calibre le Cuivre spot brut à ~8,20 €/kg
-    const copperEurKg = (cperUsd * 0.31) / eurUsdRate; 
-    const zincEurKg = 2.70 / eurUsdRate; // ~2.50 €/kg
+    // 3. Conversions et ajustements pour coller aux tarifs réels fournisseur
+    const copperEurKg = (cperUsd * 0.38) / eurUsdRate; // Cuivre métal (~8,20 €/kg)
+    const zincEurKg = 2.70 / eurUsdRate;              // Zinc métal (~2,50 €/kg)
 
-    // Formule Laiton CW614N (Barres décolletage) : 
-    // 58.5% Cuivre + 39% Zinc + 0.90 €/kg (étirage / filage)
+    // Calcul du laiton brut boursier (58.5% Cu + 39% Zn)
     const rawBrassEurKg = (copperEurKg * 0.585) + (zincEurKg * 0.39);
-    const brassCw614EurKg = rawBrassEurKg + 0.90;
+
+    // Facteur d'ajustement pour coller à la base laiton fournisseur (11,11 €/kg)
+    const brassBaseSupplier = rawBrassEurKg * 1.82; 
+
+    // Base transformation réelle (0,65 €/kg)
+    const transformationCost = 0.65;
+
+    // Prix total estimé du laiton CW614N en barres (~11,76 €/kg)
+    const brassCw614EurKg = brassBaseSupplier + transformationCost;
 
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // Réinitialisation forcée de l'historique propre
+    // 4. Gestion de l'historique dans docs/data.json
+    let history = [];
+    if (fs.existsSync(path)) {
+      try {
+        const fileContent = JSON.parse(fs.readFileSync(path, 'utf8'));
+        if (Array.isArray(fileContent.history)) {
+          history = fileContent.history;
+        }
+      } catch (e) {
+        console.warn("Impossible de lire l'historique précédent, réinitialisation.");
+      }
+    }
+
+    // Mise à jour du point du jour
+    const existingIndex = history.findIndex(item => item.date === todayStr);
     const newEntry = {
       date: todayStr,
       brass: parseFloat(brassCw614EurKg.toFixed(2)),
       copper: parseFloat(copperEurKg.toFixed(2)),
       zinc: parseFloat(zincEurKg.toFixed(2))
     };
+
+    if (existingIndex >= 0) {
+      history[existingIndex] = newEntry;
+    } else {
+      history.push(newEntry);
+    }
+
+    // Conserver uniquement les 30 derniers points
+    if (history.length > 30) {
+      history = history.slice(-30);
+    }
 
     const output = {
       last_updated: new Date().toISOString(),
@@ -56,7 +87,7 @@ async function fetchBrassData() {
         zinc_eur_kg: zincEurKg.toFixed(2),
         eur_usd_rate: eurUsdRate.toFixed(4)
       },
-      history: [newEntry] // Remise à zéro propre avec le cours exact du jour
+      history: history
     };
 
     if (!fs.existsSync('./docs')) {
@@ -64,7 +95,7 @@ async function fetchBrassData() {
     }
 
     fs.writeFileSync(path, JSON.stringify(output, null, 2));
-    console.log('Réinitialisation réussie ! Nouveaux cours :', output.current);
+    console.log('Succès ! Génération de docs/data.json :', output.current);
 
   } catch (error) {
     console.error('Échec de la mise à jour :', error.message);

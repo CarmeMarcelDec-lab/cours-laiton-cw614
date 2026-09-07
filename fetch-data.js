@@ -9,19 +9,22 @@ if (!API_KEY) {
 
 async function fetchBrassData() {
   try {
-    // 1. Récupération du cours du Cuivre via /time_series (plus stable sur le plan gratuit)
-    const copperUrl = `https://api.twelvedata.com/time_series?symbol=COPPER&interval=1day&outputsize=1&apikey=${API_KEY}`;
+    // Solution A : Récupération du cuivre via le symbole Spot XCU/USD
+    const copperUrl = `https://api.twelvedata.com/time_series?symbol=XCU/USD&interval=1day&outputsize=1&apikey=${API_KEY}`;
     const copperResponse = await fetch(copperUrl);
     const copperData = await copperResponse.json();
 
+    // Vérification de la réponse API
     if (copperData.status === 'error' || !copperData.values || !copperData.values[0]) {
-      throw new Error(`Erreur API Cuivre : ${copperData.message || JSON.stringify(copperData)}`);
+      throw new Error(`Erreur API XCU/USD : ${copperData.message || JSON.stringify(copperData)}`);
     }
 
-    const copperUsdPerLb = parseFloat(copperData.values[0].close);
+    // Le cours XCU/USD est généralement exprimé en USD par Once troy (1 oz troy = 0.0311034768 kg)
+    const copperUsdPerOz = parseFloat(copperData.values[0].close);
+    const copperUsdPerKg = copperUsdPerOz / 0.0311034768;
 
-    // 2. Récupération du taux de change EUR/USD
-    let eurUsdRate = 1.08; // Valeur par défaut
+    // Récupération du taux EUR/USD pour la conversion
+    let eurUsdRate = 1.08;
     try {
       const eurUsdUrl = `https://api.twelvedata.com/price?symbol=EUR/USD&apikey=${API_KEY}`;
       const eurUsdResponse = await fetch(eurUsdUrl);
@@ -30,19 +33,17 @@ async function fetchBrassData() {
         eurUsdRate = parseFloat(eurUsdData.price);
       }
     } catch (e) {
-      console.warn("Impossible de récupérer le taux EUR/USD exact, utilisation du taux par défaut (1.08)");
+      console.warn("Utilisation du taux EUR/USD par défaut (1.08)");
     }
 
-    // Conversions : 1 lb = 0.453592 kg
-    const copperUsdPerKg = copperUsdPerLb / 0.453592;
     const copperEurPerKg = copperUsdPerKg / eurUsdRate;
 
-    // Estimation CW614N (58% Cuivre + composante Zinc/transformation)
+    // Estimation CW614N (58% Cuivre + coût transformation / composante zinc)
     const estimatedBrassEurPerKg = (copperEurPerKg * 0.58) + 1.80;
 
     const result = {
       last_updated: new Date().toISOString(),
-      copper_usd_lb: copperUsdPerLb.toFixed(4),
+      copper_usd_oz: copperUsdPerOz.toFixed(2),
       copper_eur_kg: copperEurPerKg.toFixed(2),
       brass_cw614_eur_kg: estimatedBrassEurPerKg.toFixed(2),
       eur_usd_rate: eurUsdRate.toFixed(4)

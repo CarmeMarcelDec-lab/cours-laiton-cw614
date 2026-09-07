@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cours du Laiton CW614N</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-width: 450px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin-top: 0;
+      color: #1a1a1a;
+      border-bottom: 2px solid #e1e4e8;
+      padding-bottom: 10px;
+    }
+    .price-box {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-left: 4px solid #0066cc;
+      border-radius: 4px;
+    }
+    .price-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #0066cc;
+    }
+    .updated {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 15px;
+    }
+    .error {
+      color: #d73a49;
+      background-color: #ffdce0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
 
+  <div class="card">
+    <h1>Indicateur Laiton CW614N</h1>
+    <div id="content">Chargement des données...</div>
+  </div>
+
+  <script>
+    fetch('./data.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Impossible de trouver le fichier data.json (HTTP " + response.status + ")");
+        }
+        return response.json();
+      })
+      .then(data => {
+        const dateFormatted = new Date(data.last_updated).toLocaleString('fr-FR', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        });
+
+        document.getElementById('content').innerHTML = `
+          <div class="price-box">
+            <div>Cours Cuivre brut :</div>
+            <div class="price-value">$${data.copper_price_usd} / lb</div>
+          </div>
+          <p class="updated">Dernière mise à jour : ${dateFormatted}</p>
+        `;
+      })
+      .catch(error => {
+        console.error("Erreur :", error);
+        document.getElementById('content').innerHTML = `
+          <div class="error">
+            <strong>Erreur d'affichage :</strong><br>
+            ${error.message}
+          </div>
+        `;
+      });
+  </script>
+
+</body>
+</html>

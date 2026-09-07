@@ -14,9 +14,9 @@
       --card-bg: #131A26;
       --card-border: #1E293B;
       --accent-brass: #F59E0B;
-      --accent-alu: #3B82F6;
-      --accent-inox: #10B981;
-      --accent-steel: #94A3B8;
+      --accent-alu: #10B981;
+      --accent-inox: #EAB308;
+      --accent-steel: #2563EB;
       --text-main: #F1F5F9;
       --text-muted: #64748B;
     }
@@ -65,16 +65,6 @@
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-
-    .brand-title span.tag {
-      font-size: 0.65rem;
-      background: rgba(59, 130, 246, 0.15);
-      color: #60A5FA;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 2px 8px;
-      border-radius: 4px;
-      letter-spacing: 0.1em;
     }
 
     .subtitle {
@@ -199,7 +189,6 @@
       <div>
         <div class="brand-title">
           Carme Marcel Décolletage
-          <span class="tag">AÉRONAUTIQUE & PRÉCISION</span>
         </div>
         <div class="subtitle">Baromètre des métaux de décolletage (€ HT / kg)</div>
       </div>
@@ -285,15 +274,6 @@
               {
                 label: 'Alu 2017A',
                 data: history.map(i => i.alu2017),
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                borderWidth: 2,
-                pointRadius: 3,
-                tension: 0.2
-              },
-              {
-                label: 'Inox 303',
-                data: history.map(i => i.inox303),
                 borderColor: '#10B981',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 borderWidth: 2,
@@ -301,10 +281,19 @@
                 tension: 0.2
               },
               {
+                label: 'Inox 303',
+                data: history.map(i => i.inox303),
+                borderColor: '#EAB308',
+                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                borderWidth: 2,
+                pointRadius: 3,
+                tension: 0.2
+              },
+              {
                 label: 'Acier S300PB',
                 data: history.map(i => i.s300pb),
-                borderColor: '#94A3B8',
-                backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                borderColor: '#2563EB',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
                 borderWidth: 2,
                 pointRadius: 3,
                 tension: 0.2

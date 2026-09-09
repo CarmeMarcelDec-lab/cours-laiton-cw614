@@ -3,7 +3,7 @@ name: Update Brass Price Data
 on:
   schedule:
     # S'exécute du lundi au vendredi à 18h00 UTC
-    - cron: '0 5 * * 1-5'
+    - cron: '0 5,15 * * 1-5'
   workflow_dispatch: # Permet le déclenchement manuel
 
 jobs:
